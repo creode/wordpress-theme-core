@@ -1,0 +1,14 @@
+{
+    "name": "creode/wordpress-theme-core",
+    "description": "Small set of core files used in WordPress to assist in theme development",
+    "type": "wordpress-themecore",
+    "authors": [
+        {
+            "name": "Creode",
+            "email": "contact@creode.co.uk"
+        }
+    ],
+    "require": {
+        "idleberg/vite-manifest": "^1.1"
+    }
+}
