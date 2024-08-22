@@ -23,7 +23,7 @@ class Assets {
 	 * Enqueue assets.
 	 */
 	public function __construct() {
-		$this->load_manifest();
+		$this->manifest = self::get_manifest();
 		if ( $this->is_in_development_mode() ) {
 			$this->add_hot_reload_assets( 'wp_head', 'src/main.js' );
 			$this->add_hot_reload_assets( 'admin_head', 'src/admin.js' );
@@ -32,6 +32,30 @@ class Assets {
 			$this->enqueue_styles( 'admin_enqueue_scripts', 'src/admin.js' );
 			$this->add_editor_styles( 'src/admin.js' );
 		}
+	}
+
+	/**
+	 * Registers a script for enqueuing.
+	 *
+	 * @param string $handle
+	 * @param string $path
+	 * @param array $dependencies
+	 * @param bool|array $in_footer
+	 *
+	 * @return void
+	 */
+	public static function register_vite_script( string $handle, string $path, array $dependencies, $in_footer = array() )
+	{
+		$manifest   = self::get_manifest();
+		$entrypoint = $manifest->getEntrypoint( $path );
+
+		wp_register_script(
+			$handle,
+			$entrypoint['url'],
+			$dependencies,
+			$entrypoint['hash'],
+			$in_footer
+		);
 	}
 
 	/**
@@ -66,9 +90,11 @@ class Assets {
 
 	/**
 	 * Instantiate manifest object.
+	 * 
+	 * @return Manifest
 	 */
-	protected function load_manifest() {
-		$this->manifest = new Manifest(
+	protected static function get_manifest() {
+		return new Manifest(
 			get_template_directory() . '/dist/.vite/manifest.json',
 			get_template_directory_uri() . '/dist/assets'
 		);
@@ -85,11 +111,12 @@ class Assets {
 			$action,
 			function () use ( $entrypoint ) {
 				$styles = $this->manifest->getStyles( $entrypoint );
+				$asset = $this->manifest->getManifest()[ $entrypoint ];
 				foreach ( $styles as $style ) {
 					if ( empty( $style['url'] ) ) {
 						continue;
 					}
-					wp_enqueue_style( 'main', $style['url'] );
+					wp_enqueue_style( $asset['name'], $style['url'], array(), $style['hash'] );
 				}
 			}
 		);
