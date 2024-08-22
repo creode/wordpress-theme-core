@@ -9,7 +9,6 @@
         }
     ],
     "require": {
-        "composer/installers": "*",
         "idleberg/vite-manifest": "^1.1"
     }
 }
