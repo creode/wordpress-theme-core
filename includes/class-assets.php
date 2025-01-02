@@ -37,17 +37,16 @@ class Assets {
 	/**
 	 * Registers a script for enqueuing.
 	 *
-	 * @param string $handle
-	 * @param string $path
-	 * @param array $dependencies
-	 * @param bool|array $in_footer
+	 * @param string     $handle The scripts handle name.
+	 * @param string     $path The path to the script.
+	 * @param array      $dependencies The scripts dependencies.
+	 * @param bool|array $in_footer Whether to enqueue the script in the footer.
 	 *
 	 * @return void
 	 */
-	public static function register_vite_script( string $handle, string $path, array $dependencies, $in_footer = array() )
-	{
+	public static function register_vite_script( string $handle, string $path, array $dependencies, $in_footer = array() ) {
 		$manifest   = self::get_manifest();
-		$entrypoint = $manifest->getEntrypoint( $path );
+		$entrypoint = $manifest->getEntrypoint( $path, false );
 
 		wp_register_script(
 			$handle,
@@ -90,7 +89,7 @@ class Assets {
 
 	/**
 	 * Instantiate manifest object.
-	 * 
+	 *
 	 * @return Manifest
 	 */
 	protected static function get_manifest() {
@@ -110,7 +109,9 @@ class Assets {
 		add_action(
 			$action,
 			function () use ( $entrypoint ) {
-				$styles = $this->manifest->getStyles( $entrypoint );
+				// Get styles without generating hashes as we don't use them and it causes warnings with .htaccess passwords.
+				$styles = $this->manifest->getStyles( $entrypoint, false );
+
 				$asset = $this->manifest->getManifest()[ $entrypoint ];
 				foreach ( $styles as $style ) {
 					if ( empty( $style['url'] ) ) {
@@ -128,7 +129,7 @@ class Assets {
 	 * @param string $entrypoint The asset entrypoint.
 	 */
 	protected function add_editor_styles( string $entrypoint ) {
-		$styles = $this->manifest->getStyles( $entrypoint );
+		$styles = $this->manifest->getStyles( $entrypoint, false );
 		foreach ( $styles as $style ) {
 			if ( empty( $style['url'] ) ) {
 				continue;
