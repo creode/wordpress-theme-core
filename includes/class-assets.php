@@ -37,10 +37,10 @@ class Assets {
 	/**
 	 * Registers a script for enqueuing.
 	 *
-	 * @param string $handle
-	 * @param string $path
-	 * @param array $dependencies
-	 * @param bool|array $in_footer
+	 * @param string     $handle The scripts handle name.
+	 * @param string     $path The path to the script.
+	 * @param array      $dependencies The scripts dependencies.
+	 * @param bool|array $in_footer Whether to enqueue the script in the footer.
 	 *
 	 * @return void
 	 */
@@ -90,7 +90,7 @@ class Assets {
 
 	/**
 	 * Instantiate manifest object.
-	 * 
+	 *
 	 * @return Manifest
 	 */
 	protected static function get_manifest() {
